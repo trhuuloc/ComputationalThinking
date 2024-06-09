@@ -59,10 +59,12 @@ def detect_faces():
         with torch.no_grad():
             classifier_output = classifier_model(input_tensor)
         classifier = 'real' if torch.argmax(classifier_output) == 0 else 'fake'
-        
+        # print(classifier)
         buffered = io.BytesIO()
+        # pil_cropped_image = Image.fromarray(image_np[int(y1):int(y2), int(x1):int(x2)])
         pil_cropped_image.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        # print(classifier)
 
         faces.append({
             'box': [int(x1), int(y1), int(x2), int(y2)],
