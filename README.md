@@ -6,6 +6,9 @@
 
 # Fake Face Detection Application
 
+![Screenshot 2024-06-09 231745](https://github.com/trhuuloc/ComputationalThinking/assets/127290366/393702d6-00bc-4a97-9b43-fe89271c03b0)
+
+
 ## Overview:
 
 This is final project for Computational Thinking course at UIT - CS117.O21.KHTN
