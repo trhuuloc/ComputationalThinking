@@ -17,7 +17,6 @@ CORS(app)
 # Load YOLOv5 model
 model = yolov5.load('yolov5s.pt')
 
-# Load gender classification model
 classifier_model = models.shufflenet_v2_x1_0()
 classifier_model.fc = nn.Sequential(
     nn.Dropout(0.2, inplace=True),
@@ -41,9 +40,8 @@ def detect_faces():
 
     image_file = request.files['image']
     image = Image.open(image_file.stream)
-    image_np = np.array(image)  # Convert PIL image to NumPy array
+    image_np = np.array(image) 
 
-    # Run YOLOv5 model to detect faces
     results = model(image)
 
     faces = []
@@ -51,19 +49,16 @@ def detect_faces():
         x1, y1, x2, y2, conf, cls = pred
         cropped_image = image_np[int(y1):int(y2), int(x1):int(x2)]
         
-        # Preprocess the cropped image
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
         cropped_image = cv2.resize(cropped_image, (64, 64))
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
         
-        # Apply transformation
         pil_cropped_image = Image.fromarray(cropped_image)
         input_tensor = transform(pil_cropped_image).unsqueeze(0)
         
         with torch.no_grad():
             classifier_output = classifier_model(input_tensor)
         classifier = 'real' if torch.argmax(classifier_output) == 0 else 'fake'
-        print(torch.argmax(classifier_output))
         
         buffered = io.BytesIO()
         pil_cropped_image.save(buffered, format="JPEG")
