@@ -22,7 +22,7 @@ classifier_model.fc = nn.Sequential(
     nn.Dropout(0.2, inplace=True),
     nn.Linear(in_features=1024, out_features=2, bias=True)
 )
-state_dict = torch.load(r'C:\HocDaiHoc\HK4\ComputationalThinking\backend\shuffle_epoch_18.pt', map_location=torch.device('cpu'))
+state_dict = torch.load(r'D:\Năm 2 - ANTN\Computational_Thinking\ComputationalThinking\backend\shuffle_epoch_18.pt', map_location=torch.device('cpu'))
 classifier_model.load_state_dict(state_dict, strict=False)
 classifier_model.eval()
 

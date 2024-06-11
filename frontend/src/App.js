@@ -65,17 +65,48 @@ function App() {
     }, [previewImage, faces]);
 
     return (
-        <div>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
-            <button className='button-30' id='Detect' onClick={detectFaces}>Detect Faces</button>
-            {previewImage && <canvas ref={canvasRef} style={{ display: 'block', maxWidth: '100%' }} />}
-            <div>
-                {faces.map((face, index) => (
-                    <div key={index}>
-                        <img src={`data:image/jpeg;base64,${face.cropped_image}`} alt={`Face ${index}`} />
-                        <p>{face.classifier}</p>
+        <div className="min-h-screen flex flex-col items-center bg-gradient-to-r from-black to-gray-400 p-5">
+            <h1 className="text-[100px] text-white font-bold mt-10 mb-5 animate-pulse">
+                Fake Face Detection
+            </h1>
+            <div className="flex w-full justify-center items-start mt-5">
+                <div className="flex flex-col items-center">
+                    <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageChange} 
+                        className="mb-4 px-4 py-2 text-white text-[30px] border border-gray-300 rounded-lg cursor-pointer shadow-lg transition-transform transform hover:scale-105"
+                    />
+                    {previewImage && (
+                        <div className="mb-4">
+                            <canvas ref={canvasRef} className="max-w-full border border-gray-300 rounded-lg shadow-lg"></canvas>
+                        </div>
+                    )}
+                </div>
+                <button 
+                    className="mx-10 my-6 px-6 py-5 bg-gradient-to-r w-[500px] text-[50px] from-white to-gray-300 text-black rounded-lg shadow-lg hover:shadow-xl transition-transform transform hover:scale-105"
+                    onClick={detectFaces}
+                >
+                    Detect Faces
+                </button>
+                <div className="flex flex-col items-center">
+                    <div className="flex justify-center w-full">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {faces.map((face, index) => (
+                                <div key={index} className="flex flex-col items-center">
+                                    <img 
+                                        src={`data:image/jpeg;base64,${face.cropped_image}`} 
+                                        alt={`Face ${index}`} 
+                                        className="w-48 h-48 object-cover border border-gray-300 rounded-lg shadow-lg"
+                                    />
+                                    <p className={`mt-2 text-[40px] font-bold ${face.classifier === 'fake' ? 'text-red-500' : 'text-green-400'}`}>
+                                        {face.classifier}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                ))}
+                </div>
             </div>
         </div>
     );
