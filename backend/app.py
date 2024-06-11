@@ -30,7 +30,7 @@ def load_model():
         nn.Dropout(0.2, inplace=True),
         nn.Linear(in_features=1024, out_features=2, bias=True)
     )
-    model.load_state_dict(torch.load('ct_epoch_11.pth', map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load('ct_new_epoch_15.pth', map_location=torch.device('cpu')))
     return model.eval()
 
 app = Flask(__name__)
