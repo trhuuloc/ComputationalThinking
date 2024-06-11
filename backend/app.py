@@ -5,33 +5,43 @@ from PIL import Image
 import numpy as np
 import io
 import base64
-import yolov5
 import torchvision.transforms as transforms
-from torchvision import models
+import torchvision.models as models
 import torch.nn as nn
 import cv2
+import pathlib
+temp = pathlib.PosixPath
+pathlib.PosixPath = pathlib.WindowsPath
+
+def predict(img, model):
+    img = np.array(img)
+    img = cv2.resize(img, (64, 64))
+    image = img.astype(np.float32)
+    image = image.transpose(2, 0, 1)
+    image = torch.tensor(image).unsqueeze(0)
+
+    outputs = model(image)
+    _, predicted = torch.max(outputs, 1)
+    return predicted
+
+def load_model():
+    model = models.shufflenet_v2_x1_0(pretrained=True)
+    model.fc = nn.Sequential(
+        nn.Dropout(0.2, inplace=True),
+        nn.Linear(in_features=1024, out_features=2, bias=True)
+    )
+    model.load_state_dict(torch.load('ct_epoch_11.pth', map_location=torch.device('cpu')))
+    return model.eval()
 
 app = Flask(__name__)
 CORS(app)
 
 # Load YOLOv5 model
-model = yolov5.load('yolov5s.pt')
+model_path = str('best.pt')
+model = torch.hub.load('ultralytics/yolov5', 'custom', path=model_path, force_reload=True, trust_repo=True)
+# model = torch.hub.load("ultralytics/yolov5", "yolov5s")
 
-classifier_model = models.shufflenet_v2_x1_0()
-classifier_model.fc = nn.Sequential(
-    nn.Dropout(0.2, inplace=True),
-    nn.Linear(in_features=1024, out_features=2, bias=True)
-)
-state_dict = torch.load(r'D:\Năm 2 - ANTN\Computational_Thinking\ComputationalThinking\backend\shuffle_epoch_18.pt', map_location=torch.device('cpu'))
-classifier_model.load_state_dict(state_dict, strict=False)
-classifier_model.eval()
-
-# Define transformation
-transform = transforms.Compose([
-    transforms.Resize((128, 128)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-])
+classifier_model = load_model()
 
 @app.route('/detect', methods=['POST'])
 def detect_faces():
@@ -43,34 +53,25 @@ def detect_faces():
     image_np = np.array(image) 
 
     results = model(image)
+    
 
     faces = []
     for pred in results.pred[0]:
         x1, y1, x2, y2, conf, cls = pred
         cropped_image = image_np[int(y1):int(y2), int(x1):int(x2)]
-        
-        cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_RGB2BGR)
-        cropped_image = cv2.resize(cropped_image, (64, 64))
-        cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
-        
         pil_cropped_image = Image.fromarray(cropped_image)
-        input_tensor = transform(pil_cropped_image).unsqueeze(0)
-        
-        with torch.no_grad():
-            classifier_output = classifier_model(input_tensor)
-        classifier = 'real' if torch.argmax(classifier_output) == 0 else 'fake'
-        # print(classifier)
+        classifier = predict(pil_cropped_image, classifier_model)
         buffered = io.BytesIO()
-        # pil_cropped_image = Image.fromarray(image_np[int(y1):int(y2), int(x1):int(x2)])
         pil_cropped_image.save(buffered, format="JPEG")
         img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
-        # print(classifier)
-
+        
+        pred_label = 'fake' if classifier else 'real'
+        
         faces.append({
             'box': [int(x1), int(y1), int(x2), int(y2)],
             'confidence': float(conf),
             'cropped_image': img_str,
-            'classifier': classifier
+            'classifier': pred_label
         })
 
     return jsonify({'faces': faces})
