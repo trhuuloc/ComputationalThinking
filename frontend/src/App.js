@@ -35,6 +35,7 @@ function App() {
 
             const result = await response.json();
             setFaces(result.faces);
+            console.log(result.time);
         } catch (error) {
             console.error('Error:', error);
             alert('Failed to detect faces. Please try again.');
@@ -54,9 +55,16 @@ function App() {
 
                 faces.forEach((face) => {
                     const [x1, y1, x2, y2] = face.box;
+                    const boxWidth = x2 - x1;
+                    const fontSize = boxWidth * 0.15;
+
                     context.strokeStyle = 'red';
                     context.lineWidth = 2;
-                    context.strokeRect(x1, y1, x2 - x1, y2 - y1);
+                    context.strokeRect(x1, y1, boxWidth, y2 - y1);
+
+                    context.font = `${fontSize}px Arial`;
+                    context.fillStyle = 'red';
+                    context.fillText(`Conf: ${face.confidence.toFixed(2)}`, x1, y1 - 2);
                 });
             };
 

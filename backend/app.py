@@ -9,6 +9,7 @@ import torchvision.transforms as transforms
 import torchvision.models as models
 import torch.nn as nn
 import cv2
+import time
 import pathlib
 temp = pathlib.PosixPath
 pathlib.PosixPath = pathlib.WindowsPath
@@ -48,6 +49,7 @@ def detect_faces():
     if 'image' not in request.files:
         return jsonify({'error': 'No image uploaded'}), 400
 
+    start_time = time.time()
     image_file = request.files['image']
     image = Image.open(image_file.stream)
     image_np = np.array(image) 
@@ -73,8 +75,11 @@ def detect_faces():
             'cropped_image': img_str,
             'classifier': pred_label
         })
+        
+    end_time = time.time()
+    
 
-    return jsonify({'faces': faces})
+    return jsonify({'faces': faces,'time': end_time-start_time})
 
 if __name__ == '__main__':
     app.run(debug=True)
