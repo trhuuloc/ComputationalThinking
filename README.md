@@ -6,7 +6,8 @@
 
 # Fake Face Detection Application
 
-![Screenshot 2024-06-09 231745](https://github.com/trhuuloc/ComputationalThinking/assets/127290366/393702d6-00bc-4a97-9b43-fe89271c03b0)
+![Screenshot 2024-06-12 093217](https://github.com/trhuuloc/ComputationalThinking/assets/127290366/14d78c24-2932-4e43-95a4-58a0a9415952)
+
 
 
 ## Overview:
@@ -45,7 +46,7 @@ Run both backend and frontend:
 
 * Run frontend:
     ```
-    npm start
+    npm run start
     ```
 #### Backend:
 * Create virtual environment:
