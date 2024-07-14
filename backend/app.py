@@ -51,7 +51,7 @@ def detect_faces():
 
     start_time = time.time()
     image_file = request.files['image']
-    image = Image.open(image_file.stream)
+    image = Image.open(image_file.stream).convert('RGB')
     image_np = np.array(image) 
 
     results = model(image)
@@ -61,7 +61,7 @@ def detect_faces():
     for pred in results.pred[0]:
         x1, y1, x2, y2, conf, cls = pred
         cropped_image = image_np[int(y1):int(y2), int(x1):int(x2)]
-        pil_cropped_image = Image.fromarray(cropped_image)
+        pil_cropped_image = Image.fromarray(cropped_image).convert('RGB')
         classifier = predict(pil_cropped_image, classifier_model)
         buffered = io.BytesIO()
         pil_cropped_image.save(buffered, format="JPEG")
