@@ -6,7 +6,7 @@
 
 # Fake Face Detection Application
 
-![Screenshot 2024-06-12 093217](https://github.com/trhuuloc/ComputationalThinking/assets/127290366/14d78c24-2932-4e43-95a4-58a0a9415952)
+![Screenshot 2024-07-14 161724](https://github.com/user-attachments/assets/ded1219c-3e78-4b27-8e61-e378c12e2ae5)
 
 
 
